@@ -1,15 +1,29 @@
 <script>
   import Button from "./ui/button/button.svelte";
   import { Input } from "./ui/input";
+  import { onMount } from "svelte";
 
   export let className;
-  let messages = [
-    { id: 1, user: "Alice", text: "Hey there!", sentAt: "10:00 AM" },
-    { id: 2, user: "You", text: "Hi! What's up?", sentAt: "10:01 AM" },
-  ];
+
+  let messages = [];
+  onMount(async () => {
+    const response = await fetch("http://localhost:5000/start_chat");
+    const data = await response.json();
+    messages = [
+      {
+        id: Date.now(),
+        user: "Bot",
+        text: data.message,
+        sentAt: new Date().toLocaleTimeString(),
+      },
+    ];
+    console.log(messages);
+  });
+
   let newMessage = "";
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
+    // Add the new userMessage to the chat
     if (newMessage.trim()) {
       messages = [
         ...messages,
@@ -20,13 +34,38 @@
           sentAt: new Date().toLocaleTimeString(),
         },
       ];
+
+      // Send the message to the backend
+      try {
+        const response = await fetch("http://localhost:5000/send_message", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: newMessage }),
+        });
+
+        const data = await response.json();
+
+        // Add the bot's response to the chat
+        messages = [
+          ...messages,
+          {
+            id: Date.now(),
+            user: "Bot",
+            text: data.reply,
+            sentAt: new Date().toLocaleTimeString(),
+          },
+        ];
+      } catch (error) {
+        console.error("Error sending message:", error);
+      }
+
       newMessage = "";
     }
   };
 </script>
 
 <div
-  class="flex flex-col bg-card border-border border rounded-lg ${className} h-full"
+  class="flex flex-col bg-card border-border border rounded-lg ${className} h-[80vh] min-w-[480px]"
 >
   <!-- Chat Messages -->
   <div class="flex-1 p-4 overflow-y-auto space-y-4">
@@ -49,7 +88,10 @@
   </div>
 
   <!-- Chat Input -->
-  <form class="p-4 flex items-center space-x-4" on:submit={sendMessage}>
+  <form
+    class="p-4 flex items-center space-x-4"
+    on:submit|preventDefault={sendMessage}
+  >
     <Input
       type="text"
       class="flex-1 p-2 border border-border bg-background rounded-lg shadow focus:outline-none focus:ring focus:ring-ring"
