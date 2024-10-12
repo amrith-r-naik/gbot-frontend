@@ -65,10 +65,11 @@
 </script>
 
 <div
-  class="flex flex-col bg-card border-border border rounded-lg ${className} h-[80vh] min-w-[480px]"
+  class="flex flex-col bg-card border-border border rounded-lg ${className} h-[80%] min-w-[480px]" 
 >
   <!-- Chat Messages -->
-  <div class="flex-1 p-4 overflow-y-auto space-y-4">
+  <div class="flex-1 p-4 overflow-y-auto space-y-4 " style="scrollbar-width: none;">
+    
     {#each messages as message (message.id)}
       <div
         class="flex {message.user === 'You' ? 'justify-end' : 'justify-start'}"
