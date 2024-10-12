@@ -10,6 +10,7 @@
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@tailwindcss/typography": "^0.5.15",
     "autoprefixer": "^10.4.20",
     "postcss": "^8.4.47",
     "svelte": "^4.2.19",
@@ -20,6 +21,7 @@
     "bits-ui": "^0.21.16",
     "clsx": "^2.1.1",
     "formsnap": "^1.0.1",
+    "marked": "^14.1.2",
     "sveltekit-superforms": "^2.19.1",
     "tailwind-merge": "^2.5.3",
     "tailwind-variants": "^0.2.1",

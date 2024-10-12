@@ -2,6 +2,7 @@
   import Button from "./ui/button/button.svelte";
   import { Input } from "./ui/input";
   import { onMount } from "svelte";
+  import { marked } from "marked";
 
   export let className;
 
@@ -46,12 +47,13 @@
         const data = await response.json();
 
         // Add the bot's response to the chat
+        console.log(marked(data.reply));
         messages = [
           ...messages,
           {
             id: Date.now(),
             user: "Bot",
-            text: data.reply,
+            text: marked(data.reply),
             sentAt: new Date().toLocaleTimeString(),
           },
         ];
@@ -65,11 +67,13 @@
 </script>
 
 <div
-  class="flex flex-col bg-card border-border border rounded-lg ${className} h-[80%] min-w-[480px]" 
+  class="flex flex-col bg-card border-border border rounded-lg ${className} h-[80%] min-w-[480px]"
 >
   <!-- Chat Messages -->
-  <div class="flex-1 p-4 overflow-y-auto space-y-4 " style="scrollbar-width: none;">
-    
+  <div
+    class="flex-1 p-4 overflow-y-auto space-y-4"
+    style="scrollbar-width: none;"
+  >
     {#each messages as message (message.id)}
       <div
         class="flex {message.user === 'You' ? 'justify-end' : 'justify-start'}"
@@ -79,7 +83,11 @@
             ? 'bg-primary'
             : 'bg-secondary'}"
         >
-          <p class="text-sm">{message.text}</p>
+          <p
+            class="text-sm prose prose-invert"
+            contenteditable="true"
+            bind:innerHTML={message.text}
+          ></p>
           <small class="block text-gray-400 text-right text-xs"
             >{message.sentAt}</small
           >
